@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% load crispy_forms_tags %}
+{% load extra_tags %}
+
+{% block content %}
+    <h1>Загрузите файл</h1>
+    <p>Ответ от пользователя: {% get_username_from_userid taken_event.performer_id %}</p>
+    <form enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+
+        {{ form|crispy }}
+
+        <button class="btn btn-sm btn-success" type="submit">Подтвердить</button>
+    </form>
+{% endblock %}

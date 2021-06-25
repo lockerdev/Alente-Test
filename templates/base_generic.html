@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}<title>Alente</title>{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    {% load static %}
+    {% load extra_tags %}
+
+</head>
+
+<body>
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <h5 class="my-0 mr-md-auto font-weight-normal" href="#" >Сервис</h5>
+    <nav class="my-2 my-md-0 mr-md-3">
+        <a class="p-2 text-dark" href="/admin/">Django</a>
+        <a class="p-2 text-dark" href="/">Главная</a>
+        <a class="p-2 text-dark" href="/events/">Все события</a>
+    </nav>
+    {% if user.is_authenticated %}
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ user.get_username }}
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            {% if request.user|has_group:"Performers" %}
+                <h6 class="dropdown-header">Исполнитель</h6>
+            {% else %}
+                <h6 class="dropdown-header">Организатор</h6>
+                <a class="dropdown-item" href="/events/create/">Создать событие</a>
+            {% endif %}
+            <a class="dropdown-item" href="/taken_events/">Мои события</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}}">Выход</a>
+        </div>
+    </div>
+   {% else %}
+    <a class="btn btn-outline-primary" href="{% url 'login'%}?next={{request.path}}">Log In</a>
+   {% endif %}
+    </ul>
+</div>
+
+<div class="container-fluid">
+    <div class="row align-items-start">
+        <div class="col">
+            {% block sidebar %}
+            <ul class="sidebar-nav"></ul>
+            {% endblock %}
+        </div>
+        <div class="col-8">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+</body>
+</html>

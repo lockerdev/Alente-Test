@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<p>
+{% for event in events %}
+    {% if event.status_id == 1 %}
+    {% if event.event_type_id == 1 %}
+        <button class="btn btn-outline-primary btn-sm btn-block"
+                onclick="location.href='{% url 'detail-event' event.pk %}'">
+    {% else %}
+        <button class="btn btn-outline-secondary btn-sm btn-block"
+                onclick="location.href='{% url 'detail-event' event.pk %}'">
+    {% endif %}
+            <strong>@{{ event.user }} - {{ event.name }}</strong>
+            <br>
+            {{ event.descriptions }}
+            <br>
+        </button>
+    {% endif %}
+{% empty %}
+<h5 class="mt-0 mb-1">Открытые заказы отсутствуют</h5>
+{% endfor %}
+</p>
+{% endblock %}
