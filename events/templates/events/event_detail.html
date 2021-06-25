@@ -1,0 +1,28 @@
+{% extends "base_generic.html" %}
+{% load extra_tags %}
+
+{% block content %}
+<main role="main" class="container">
+  <h2 class="mt-3">{{ event.name }}</h2>
+  <h5 class="mt-2">@{{ event.user }}</h5>
+  <p class="lead mt-4">{{ event.descriptions }}</p>
+  <br>
+  <p>Тип задачи: {{ event.event_type }}</p>
+  {% if event.status_id == 1%}
+  <p>Срок выполнения: {{ event.data_limit }}</p>
+
+  {% if request.user|has_group:"Performers" %}
+  <a href="{% url 'add-event' ct_event=event.id %}" type="button" class="btn btn-primary">Отклинуться</a>
+  {% for tevent in taken_event %}
+  <br>  <br>
+    {% if event.id == tevent.event_id and tevent.performer_id == user.id %}
+    <a href="{% url 'request_upload' tevent.pk %}"  type="button" class="btn btn-outline-success">Отправить файл</a>
+    {% endif %}
+  {% endfor %}
+  {% endif %}
+  {% else %}
+  <p>Закрыто</p>
+  {% endif %}
+
+</main>
+{% endblock %}

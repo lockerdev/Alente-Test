@@ -1,0 +1,107 @@
+{% extends "base_generic.html" %}
+
+{% load extra_tags %}
+
+{% block content %}
+<div class="my-3 p-3 bg-white rounded box-shadow">
+    <h5 class="border-bottom border-gray pb-2 mb-0">Мои заказы</h5>
+    {% if request.user|has_group:"Performers" %}
+    {% for event in object_list %}
+    <div class="media pt-3">
+        <li class="media">
+            <div class="media-body">
+                <h5 class="mt-0 mb-1">@{{ event.user }} -  {{ event.name }}</h5>
+                {{ event.descriptions }}
+                <br><br>
+                {% if event.status_id == 1 %}
+                    <p class="text-success">Срок: {{ event.data_limit }}</p>
+                {% else %}
+                    <p class="text-danger">Закрыто</p>
+                {% endif %}
+            </div>
+        </li>
+    </div>
+    <small class="d-block text-right mt-3">
+        <a href="#"></a>
+        {% if event.status_id == 1 and event.event_type_id == 1 %}
+         <button type="button" class="btn btn-outline-success btn-sm " onclick="location.href='{% url 'detail-event' event.pk %}'" >Открыть</button>
+        {% else %}
+        <button type="button" class="btn btn-secondary btn-sm " onclick="location.href='{% url 'detail-event' event.pk %}'" >Открыть</button>
+        {% endif %}
+        <button type="button" class="btn btn-danger btn-sm" onclick="location.href='{% url 'plug-page' %}'">Удалить</button>
+    </small>
+    {% empty %}
+    <h5 class="mt-0 mb-1">Заказов нет</h5>
+    {% endfor %}
+    {% else %}
+
+    <div class="btn-group">
+        <button class="btn btn-outline-primary dropdown-toggle mt-2 md-4 btn-sm" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Состояние события</button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="{% url 'my-event'%}">Открытые</a>
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort='closed'%}">Закрытые</a>
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort='all'%}">Все</a>
+        </div>
+    </div>
+
+    <dib class="btn-group">
+        {% regroup something by name as unique_event_list %}
+        <button class="btn btn-outline-success dropdown-toggle mt-2 md-4 btn-sm" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбрать событие</button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            {% for unique_event in unique_event_list %}
+            {% with "name="|addstr:unique_event.grouper as name_sort %}
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort=name_sort  %}">{{unique_event.grouper}}</a>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </dib>
+
+    <div class="btn-group float-right mr-5">
+        <button class="btn btn-outline-danger dropdown-toggle mt-2 md-4 float-right btn-sm" type="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Сортировка</button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort='sorting=data_limit'  %}">Дата</a>
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort='sorting=name'%}">Имя</a>
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort='sorting=event_type_id'%}">Тип</a>
+            <a class="dropdown-item" href="{% url 'my-event-sorting' sort='sorting=status_id'%}">Состояние</a>
+        </div>
+    </div>
+
+    {% for event in something %}
+        {% for taken in object_list %}
+            {% if event.id == taken.event_id %}
+    <div class="media pt-3">
+        <li class="media">
+            <div class="media-body">
+                <h5 class="mt-0 mb-1">Отклик от @{% get_username_from_userid taken.performer_id %} - {{ event.name }}</h5>
+                {{ event.descriptions }}
+                <br><br>
+                {% if event.status_id == 1 %}
+                    <p class="text-success">Срок: {{ event.data_limit }}</p>
+                {% else %}
+                    <p class="text-danger">Закрыто</p>
+                {% endif %}
+                {% if event.event_type_id == 1 and taken.response_file != None and taken.response_file != ""%}
+                <a href="{{taken.response_file.url}}">
+                    <img src="{{taken.response_file.url}}" class="img-thumbnail" width=20%>
+                </a>
+                {% endif %}
+            </div>
+        </li>
+    </div>
+    <small class="d-block text-right mt-3">
+        <button type="button" class="btn btn-secondary btn-sm "
+                onclick="location.href='{% url 'detail-event' event.pk %}'" >Открыть</button>
+        <button type="button" class="btn btn-danger btn-sm"
+                onclick="location.href='{% url 'plug-page' %}'">Удалить</button>
+    </small>
+    {% endif %}
+    {% empty %}
+    <h5 class="mt-0 mb-1">Заказов нет</h5>
+    {% endfor %}
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
