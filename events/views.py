@@ -56,8 +56,6 @@ def event_filter_parser(self, filter_string):
         order_by = 'data_limit'
         status = 1
 
-    print('Params: status_id=',status,' Status_Bool=',Status_Bool,' order_by=', order_by)
-
     if Status_Bool:
         return Event.objects.filter(status_id=status, user_id=user_id).order_by(order_by)
     else:
@@ -85,7 +83,6 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
             return event
         else:
             sort_type = self.kwargs.get('sort')
-            print(sort_type)
             event_query = event_filter_parser(self, str(sort_type)[:50])
             taken = TakenEvent.objects.filter(event__in=event_query)
             #event_query = TakenEvent.objects.select_related('event').filter(event__status_id=1, event__user_id=self.request.user)
@@ -136,8 +133,6 @@ class takeEventView(View):
         if user_email is not None and user_email != '':
             subject = 'Уведомление: Новый отклик по событию \'{}\''.format(event_name)
             body = 'Приветствуем, @{}! На ваше событие \'{}\' откликнулся пользователь @{}.'.format(user_name, event_name, requster_name)
-            print(subject)
-            print(body)
             send_mail(subject, body, 'andruy.savchovski@yandex.ru', [USER.email])
         return HttpResponseRedirect('/taken_events/')
 
